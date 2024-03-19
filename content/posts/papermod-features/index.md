@@ -1,33 +1,33 @@
 ---
-author: ["Aditiya Darmawan"]
 title: "Network Infra Implementation"
-date: "2024-03-19"
-description: "Using MikroTik Router (RB951Ui-2HnD) Switch (CSS326-24G-2S+)"
-summary: "Article showcasing implementation vlan, vlsm, firewall."
+summary: Article showcasing implementation vlan, vlsm, firewall.
+date: 2024-03-19
+description: Using MikroTik Router (RB951Ui-2HnD) Switch (CSS326-24G-2S+)
+weight: 2
 tags: ["MikroTik", "Vlan", "Firewall"]
-categories: ["themes", "syntax"]
-series: ["Themes Guide"]
+author: ["Aditiya Darmawan"]
 ShowToc: true
-TocOpen: true
 ---
 
 ### Topologi
+Implementasi menggunakan metode ```Router on a stick```
 
-{{< figure align=center src="../router.jpg" >}}
+![regular](images/router.jpg)
 
+---
 ### Address
 
 `172.16.0.0/16 dibagi menjadi 7 network dengan teknik VLSM sebanyak 62 alamat ditiap subnet yang nantinya akan dialokasian ke vlan`
 
-| VLAN            | Address                  |
-| --------------- | ------------------------------- |
-| `10`         | 172.16.0.1/26 - 172.16.0.62/26 |
-| `20`         | 172.16.0.65/26 - 172.16.0.62/26 |
-| `30`         | 172.16.0.129/26 - 172.16.0.62/26 |
-| `40`         | 172.16.0.193/26 - 172.16.0.62/26 |
-| `50`         | 172.16.1.1/26 - 172.16.0.62/26 |
-| `60`         | 172.16.1.65/26 - 172.16.0.62/26 |
-| `70`         | 172.16.1.129/26 - 172.16.0.62/26 |
+| `Device` | VLAN                  | Address                           | Interface              |
+| -------- | --------------------- | --------------------------------- | ---------------------  |
+| Switch   | `10`                  | 172.16.0.1/26 - 172.16.0.62/26    |ether9                  |
+|          | `20`                  | 172.16.0.65/26 - 172.16.0.62/26   |ether10                 |
+|          | `30`                  | 172.16.0.129/26 - 172.16.0.62/26  |ether11                 |
+|          | `40`                  | 172.16.0.193/26 - 172.16.0.62/26  |ether12                 |
+|          | `50`                  | 172.16.1.1/26 - 172.16.0.62/26    |ether13                 |
+|          | `60`                  | 172.16.1.65/26 - 172.16.0.62/26   |ether14                 |
+|          | `70`                  | 172.16.1.129/26 - 172.16.0.62/26  |ether15                 |
 
 `Vlan Management dibuat dengan alamat berikut`
 
@@ -35,6 +35,13 @@ TocOpen: true
 | --------------- | ------------------------------- |
 | `99`         | 99.99.99.1/29 - 99.99.99.2/29 |
 
+---
+### Interface
+
+Vlan dibuat di ether3
+![regular](images/vlan.jpg)
+
+---
 
 ### Blocked Policy
 
@@ -72,8 +79,8 @@ add action=drop chain=forward comment="Block Download 30MB" disabled=yes \
     protocol=tcp src-address-list=client-download
 add action=drop chain=forward comment="Block Download 30MB" disabled=yes \
     protocol=udp src-address-list=client-download
-
 ```
+---
 Blokir Windows Update
 ```bash {linenos=true}
 /ip firewall filter
@@ -93,8 +100,8 @@ add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
     tls-host=download.windowsupdate.com
 add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
     tls-host=*.windowsupdate.microsoft.com
-
 ```
+---
 Blokir Sosial Media dan Streaming Service (Tidak semua layanan karna keterbatasan cpu)
 
 ```bash {linenos=true}
@@ -121,27 +128,14 @@ add action=drop chain=forward comment="Youtube Block" content=youtube.com
 add action=drop chain=forward comment="Youtube Block" content=.youtube.
 add action=drop chain=forward comment="Youtube Block" content=.googlevideo.
 ```
+---
 ### DHCP Server
 
-dhcp disetup untuk memudahkan pemberian alamat ip ke komputer
+dhcp disetup untuk memudahkan pemberian alamat ip ke komputer dengan lease time 12 jam
+![regular](images/dhcp.jpg)
 
-```bash {linenos=true}
-/ip dhcp-server
-add address-pool=dhcp_pool0 interface=R-TIK lease-time=12h name=R-TIK
-add address-pool=dhcp_pool1 interface=R-ANM lease-time=12h name=R-ANM
-add address-pool=dhcp_pool2 interface=R-BC lease-time=12h name=R-BC
-add address-pool=dhcp_pool3 interface=R-Editing lease-time=12h name=R-Editing
-add address-pool=dhcp_pool5 interface=R-RPL lease-time=12h name=RPL
-/ip dhcp-server network
-add address=10.10.10.0/24 gateway=10.10.10.1
-add address=172.16.0.0/26 dns-server=94.140.14.15,94.140.15.16 gateway=\
-    172.16.0.1
-add address=172.16.0.64/26 dns-server=94.140.14.15,94.140.15.16 gateway=\
-    172.16.0.65
-add address=172.16.0.128/26 dns-server=94.140.14.15,94.140.15.16 gateway=\
-    172.16.0.129
-add address=172.16.0.192/26 dns-server=94.140.14.15,94.140.15.16 gateway=\
-    172.16.0.193
-add address=172.16.1.64/26 gateway=172.16.1.65
-add address=192.168.10.0/24 gateway=192.168.10.1
-```
+---
+
+### Penutup
+
+untuk memaksimalkan jaringan bisa ditambahkan LACP (Link Aggregation Control Protocol) / Bonding, Fail Over, STP, RSTP, dan QOS yang nantinya memaksimalkan pengalaman pengguna.

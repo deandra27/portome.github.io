@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/portome.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=portome.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Network Infra Implementation | Aditiya Darmawan</title>
+<meta name="keywords" content="MikroTik, Vlan, Firewall">
+<meta name="description" content="Using MikroTik Router (RB951Ui-2HnD) Switch (CSS326-24G-2S&#43;)">
+<meta name="author" content="Aditiya Darmawan">
+<link rel="canonical" href="http://localhost:1313/portome.github.io/posts/papermod-features/">
+<link crossorigin="anonymous" href="/portome.github.io/assets/css/stylesheet.4599eadb9eb2ad3d0a8d6827b41a8fda8f2f4af226b63466c09c5fddbc8706b7.css" integrity="sha256-RZnq256yrT0KjWgntBqP2o8vSvImtjRmwJxf3byHBrc=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/portome.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/portome.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/portome.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/portome.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/portome.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/portome.github.io/posts/papermod-features/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/portome.github.io/" accesskey="h" title="Aditiya Darmawan (Alt + H)">Aditiya Darmawan</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Network Infra Implementation
+    </h1>
+    <div class="post-description">
+      Using MikroTik Router (RB951Ui-2HnD) Switch (CSS326-24G-2S&#43;)
+    </div>
+    <div class="post-meta"><span title='2024-03-19 00:00:00 +0000 UTC'>March 19, 2024</span>&nbsp;·&nbsp;Aditiya Darmawan
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#topologi" aria-label="Topologi">Topologi</a></li>
+                <li>
+                    <a href="#address" aria-label="Address">Address</a></li>
+                <li>
+                    <a href="#interface" aria-label="Interface">Interface</a></li>
+                <li>
+                    <a href="#blocked-policy" aria-label="Blocked Policy">Blocked Policy</a></li>
+                <li>
+                    <a href="#dhcp-server" aria-label="DHCP Server">DHCP Server</a></li>
+                <li>
+                    <a href="#penutup" aria-label="Penutup">Penutup</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="topologi">Topologi<a hidden class="anchor" aria-hidden="true" href="#topologi">#</a></h3>
+<p>Implementasi menggunakan metode <code>Router on a stick</code></p>
+<p><img loading="lazy" src="images/router.jpg" alt="regular"  />
+</p>
+<hr>
+<h3 id="address">Address<a hidden class="anchor" aria-hidden="true" href="#address">#</a></h3>
+<p><code>172.16.0.0/16 dibagi menjadi 7 network dengan teknik VLSM sebanyak 62 alamat ditiap subnet yang nantinya akan dialokasian ke vlan</code></p>
+<table>
+<thead>
+<tr>
+<th><code>Device</code></th>
+<th>VLAN</th>
+<th>Address</th>
+<th>Interface</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Switch</td>
+<td><code>10</code></td>
+<td>172.16.0.1/26 - 172.16.0.62/26</td>
+<td>ether9</td>
+</tr>
+<tr>
+<td></td>
+<td><code>20</code></td>
+<td>172.16.0.65/26 - 172.16.0.62/26</td>
+<td>ether10</td>
+</tr>
+<tr>
+<td></td>
+<td><code>30</code></td>
+<td>172.16.0.129/26 - 172.16.0.62/26</td>
+<td>ether11</td>
+</tr>
+<tr>
+<td></td>
+<td><code>40</code></td>
+<td>172.16.0.193/26 - 172.16.0.62/26</td>
+<td>ether12</td>
+</tr>
+<tr>
+<td></td>
+<td><code>50</code></td>
+<td>172.16.1.1/26 - 172.16.0.62/26</td>
+<td>ether13</td>
+</tr>
+<tr>
+<td></td>
+<td><code>60</code></td>
+<td>172.16.1.65/26 - 172.16.0.62/26</td>
+<td>ether14</td>
+</tr>
+<tr>
+<td></td>
+<td><code>70</code></td>
+<td>172.16.1.129/26 - 172.16.0.62/26</td>
+<td>ether15</td>
+</tr>
+</tbody>
+</table>
+<p><code>Vlan Management dibuat dengan alamat berikut</code></p>
+<table>
+<thead>
+<tr>
+<th>VLAN</th>
+<th>Address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>99</code></td>
+<td>99.99.99.1/29 - 99.99.99.2/29</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="interface">Interface<a hidden class="anchor" aria-hidden="true" href="#interface">#</a></h3>
+<p>Vlan dibuat di ether3
+<img loading="lazy" src="images/vlan.jpg" alt="regular"  />
+</p>
+<hr>
+<h3 id="blocked-policy">Blocked Policy<a hidden class="anchor" aria-hidden="true" href="#blocked-policy">#</a></h3>
+<p>Block User yang mengunduh lebih dari 30 Mb</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/ip firewall filter
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>passthrough chain<span style="color:#f92672">=</span>unused-hs-chain comment<span style="color:#f92672">=</span><span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#e6db74">&#34;place hotspot rules here&#34;</span> disabled<span style="color:#f92672">=</span>yes
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>add-src-to-address-list address-list<span style="color:#f92672">=</span>client-download <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    address-list-timeout<span style="color:#f92672">=</span>15m chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Block Download 30MB&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    connection-bytes<span style="color:#f92672">=</span>30000000-0 connection-rate<span style="color:#f92672">=</span>1M-10M disabled<span style="color:#f92672">=</span>yes protocol<span style="color:#f92672">=</span><span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    tcp src-address<span style="color:#f92672">=</span>172.16.0.192/26
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>add-src-to-address-list address-list<span style="color:#f92672">=</span>client-download <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    address-list-timeout<span style="color:#f92672">=</span>15m chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Block Download 30MB&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    connection-bytes<span style="color:#f92672">=</span>30000000-0 connection-rate<span style="color:#f92672">=</span>1M-100M disabled<span style="color:#f92672">=</span>yes <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    protocol<span style="color:#f92672">=</span>tcp src-address<span style="color:#f92672">=</span>172.16.1.0/26
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>add-src-to-address-list address-list<span style="color:#f92672">=</span>client-download <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    address-list-timeout<span style="color:#f92672">=</span>15m chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Block Download 30MB&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    connection-bytes<span style="color:#f92672">=</span>30000000-0 connection-rate<span style="color:#f92672">=</span>1M-100M disabled<span style="color:#f92672">=</span>yes <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    protocol<span style="color:#f92672">=</span>tcp src-address<span style="color:#f92672">=</span>172.16.0.128/26
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>add-src-to-address-list address-list<span style="color:#f92672">=</span>client-download <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    address-list-timeout<span style="color:#f92672">=</span>15m chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Block Download 30MB&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    connection-bytes<span style="color:#f92672">=</span>30000000-0 connection-rate<span style="color:#f92672">=</span>1M-100M disabled<span style="color:#f92672">=</span>yes <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    protocol<span style="color:#f92672">=</span>udp src-address<span style="color:#f92672">=</span>172.16.0.128/26
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>add-src-to-address-list address-list<span style="color:#f92672">=</span>client-download <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    address-list-timeout<span style="color:#f92672">=</span>15m chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Block Download 30MB&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    connection-bytes<span style="color:#f92672">=</span>30000000-0 connection-rate<span style="color:#f92672">=</span>1M-10M disabled<span style="color:#f92672">=</span>yes protocol<span style="color:#f92672">=</span><span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    udp src-address<span style="color:#f92672">=</span>172.16.0.192/26
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>add-src-to-address-list address-list<span style="color:#f92672">=</span>client-download <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    address-list-timeout<span style="color:#f92672">=</span>15m chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Block Download 30MB&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    connection-bytes<span style="color:#f92672">=</span>30000000-0 connection-rate<span style="color:#f92672">=</span>1M-10M disabled<span style="color:#f92672">=</span>yes protocol<span style="color:#f92672">=</span><span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    udp src-address<span style="color:#f92672">=</span>172.16.1.0/26
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Block Download 30MB&#34;</span> disabled<span style="color:#f92672">=</span>yes <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    protocol<span style="color:#f92672">=</span>tcp src-address-list<span style="color:#f92672">=</span>client-download
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Block Download 30MB&#34;</span> disabled<span style="color:#f92672">=</span>yes <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    protocol<span style="color:#f92672">=</span>udp src-address-list<span style="color:#f92672">=</span>client-download
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<p>Blokir Windows Update</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/ip firewall filter
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>prerouting comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Blok Windows Update&#34;</span> protocol<span style="color:#f92672">=</span>tcp <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    tls-host<span style="color:#f92672">=</span>windowsupdate.microsoft.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>prerouting comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Blok Windows Update&#34;</span> protocol<span style="color:#f92672">=</span>tcp <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    tls-host<span style="color:#f92672">=</span>download.microsoft.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>prerouting comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Blok Windows Update&#34;</span> protocol<span style="color:#f92672">=</span>tcp <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    tls-host<span style="color:#f92672">=</span>test.stats.update.microsoft.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>prerouting comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Blok Windows Update&#34;</span> protocol<span style="color:#f92672">=</span>tcp <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    tls-host<span style="color:#f92672">=</span>ntservicepack.microsoft.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>prerouting comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Blok Windows Update&#34;</span> protocol<span style="color:#f92672">=</span>tcp <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    tls-host<span style="color:#f92672">=</span>*.download.windowsupdate.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>prerouting comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Blok Windows Update&#34;</span> protocol<span style="color:#f92672">=</span>tcp <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    tls-host<span style="color:#f92672">=</span>*.update.microsoft.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>prerouting comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Blok Windows Update&#34;</span> protocol<span style="color:#f92672">=</span>tcp <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    tls-host<span style="color:#f92672">=</span>download.windowsupdate.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>prerouting comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Blok Windows Update&#34;</span> protocol<span style="color:#f92672">=</span>tcp <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    tls-host<span style="color:#f92672">=</span>*.windowsupdate.microsoft.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<p>Blokir Sosial Media dan Streaming Service (Tidak semua layanan karna keterbatasan cpu)</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/ip firewall filter
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Tiktok Block&#34;</span> disabled<span style="color:#f92672">=</span>yes protocol<span style="color:#f92672">=</span><span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    tcp tls-host<span style="color:#f92672">=</span>*.musical.ly
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Tiktok Block&#34;</span> content<span style="color:#f92672">=</span>tiktokv.com <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    disabled<span style="color:#f92672">=</span>yes
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Tiktok Block&#34;</span> content<span style="color:#f92672">=</span>musical.ly <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    disabled<span style="color:#f92672">=</span>yes
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Tiktok Block&#34;</span> content<span style="color:#f92672">=</span>tiktok disabled<span style="color:#f92672">=</span><span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    yes
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Twitter Block&#34;</span> content<span style="color:#f92672">=</span>twitter.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Twitter Block&#34;</span> content<span style="color:#f92672">=</span>.twitter.
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Youtube Block&#34;</span> content<span style="color:#f92672">=</span>googlevideo.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Twitter Block&#34;</span> content<span style="color:#f92672">=</span>twimg.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Telegram Block&#34;</span> content<span style="color:#f92672">=</span>telegram.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Telegram Block&#34;</span> content<span style="color:#f92672">=</span>.telegram.
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Netflix Block&#34;</span> content<span style="color:#f92672">=</span>netflix.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Netflix Block&#34;</span> content<span style="color:#f92672">=</span>.netflix.
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Instagram Block&#34;</span> content<span style="color:#f92672">=</span>instagram.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Instagram Block&#34;</span> content<span style="color:#f92672">=</span>.Instagram.
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Youtube Block&#34;</span> content<span style="color:#f92672">=</span>youtube.com
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Youtube Block&#34;</span> content<span style="color:#f92672">=</span>.youtube.
+</span></span><span style="display:flex;"><span>add action<span style="color:#f92672">=</span>drop chain<span style="color:#f92672">=</span>forward comment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Youtube Block&#34;</span> content<span style="color:#f92672">=</span>.googlevideo.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h3 id="dhcp-server">DHCP Server<a hidden class="anchor" aria-hidden="true" href="#dhcp-server">#</a></h3>
+<p>dhcp disetup untuk memudahkan pemberian alamat ip ke komputer dengan lease time 12 jam
+<img loading="lazy" src="images/dhcp.jpg" alt="regular"  />
+</p>
+<hr>
+<h3 id="penutup">Penutup<a hidden class="anchor" aria-hidden="true" href="#penutup">#</a></h3>
+<p>untuk memaksimalkan jaringan bisa ditambahkan LACP (Link Aggregation Control Protocol) / Bonding, Fail Over, STP, RSTP, dan QOS yang nantinya memaksimalkan pengalaman pengguna.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/portome.github.io/tags/mikrotik/">MikroTik</a></li>
+      <li><a href="http://localhost:1313/portome.github.io/tags/vlan/">Vlan</a></li>
+      <li><a href="http://localhost:1313/portome.github.io/tags/firewall/">Firewall</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2024 <a href="http://localhost:1313/portome.github.io/">Aditiya Darmawan</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

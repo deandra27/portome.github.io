@@ -1,0 +1,14 @@
+baseURL: https://example.org/
+languageCode: en-us
+title: Aditiya Darmawan
+theme: ["PaperMod"]
+
+
+params:
+  homeInfoParams:
+    Title: Hi there
+    Content: Welcome to my Portofolio
+
+  socialIcons: # optional
+    - name: "whatsapp"
+      url: "https://wa.me/+6289623385833"

@@ -80,8 +80,29 @@ add action=drop chain=forward comment="Block Download 30MB" disabled=yes \
 add action=drop chain=forward comment="Block Download 30MB" disabled=yes \
     protocol=udp src-address-list=client-download
 ```
+Blokir Windows Update Raw
+```bash {linenos=true}
+/ip firewall raw
+add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
+    tls-host=windowsupdate.microsoft.com
+add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
+    tls-host=download.microsoft.com
+add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
+    tls-host=test.stats.update.microsoft.com
+add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
+    tls-host=ntservicepack.microsoft.com
+add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
+    tls-host=*.download.windowsupdate.com
+add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
+    tls-host=*.update.microsoft.com
+add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
+    tls-host=download.windowsupdate.com
+add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
+    tls-host=*.windowsupdate.microsoft.com
+```
 ---
-Blokir Windows Update
+
+Blokir Windows Update Filter
 ```bash {linenos=true}
 /ip firewall filter
 add action=drop chain=prerouting comment="Blok Windows Update" protocol=tcp \
